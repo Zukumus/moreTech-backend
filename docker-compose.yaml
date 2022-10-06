@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+
+  server:
+    build:        
+      context: .
+      dockerfile: ./MoreTech.Api/Dockerfile
+      args:
+        - CONFIG_FILE_PATH=NuGet.Config
+    env_file: more-tech-backend.env
+    ports:
+      - 5121:80
