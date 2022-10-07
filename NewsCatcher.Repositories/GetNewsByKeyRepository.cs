@@ -5,7 +5,7 @@ using NewsCatcher.Repositories.Contracts.Models;
 
 namespace NewsCatcher.Repositories;
 
-public class GetNewsByKeyRepository : IGetNewsByKeyRepository
+internal class GetNewsByKeyRepository : IGetNewsByKeyRepository
 {
     private readonly INewCatcherClient newsCatcherClient;
     private readonly IMapper mapper;
@@ -19,6 +19,12 @@ public class GetNewsByKeyRepository : IGetNewsByKeyRepository
     public async Task<IReadOnlyCollection<NewsRepositoryModel>> GetNewsByKeyWord(string key, CancellationToken token)
     {
         var news = await newsCatcherClient.GetNewsByKeyWord(key, token);
+        return mapper.Map<IReadOnlyCollection<NewsRepositoryModel>>(news);
+    }
+
+    public async Task<IReadOnlyCollection<NewsRepositoryModel>> GetNewsByKeyWordAndDateRange(string key, DateTime starDate, DateTime endDate, CancellationToken token)
+    {
+        var news = await newsCatcherClient.GetNewsByKeyWordAndDateRange(key, starDate, endDate, token);
         return mapper.Map<IReadOnlyCollection<NewsRepositoryModel>>(news);
     }
 }

@@ -19,4 +19,9 @@ public class NewsRepositoryModel
     /// Дата публикации в источнике
     /// </summary>
     public DateTime PublishDate { get; init; }
+
+    /// <summary>
+    /// url источника
+    /// </summary>
+    public string SourceUrl { get; set; }
 }

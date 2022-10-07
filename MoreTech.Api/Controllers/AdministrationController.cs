@@ -8,14 +8,18 @@ namespace MoreTech.Api.Controllers;
 [Route("administration")]
 public class AdministrationController : ControllerBase
 {
-    private readonly IExportNewsFromSourceToFile exportNewsFromSourceToFile;
+    private readonly IExportNewsFromSourceToFileByKeyWordService exportNewsFromSourceToFileByKeyWordService;
     private readonly IFileNameConfiguration fileNameConfiguration;
+    private readonly ISaveFileService saveFileService;
 
-    public AdministrationController(IExportNewsFromSourceToFile exportNewsFromSourceToFile,
-        IFileNameConfiguration fileNameConfiguration)
+    public AdministrationController(
+        IExportNewsFromSourceToFileByKeyWordService exportNewsFromSourceToFileByKeyWordService,
+        IFileNameConfiguration fileNameConfiguration,
+        ISaveFileService saveFileService)
     {
-        this.exportNewsFromSourceToFile = exportNewsFromSourceToFile;
+        this.exportNewsFromSourceToFileByKeyWordService = exportNewsFromSourceToFileByKeyWordService;
         this.fileNameConfiguration = fileNameConfiguration;
+        this.saveFileService = saveFileService;
     }
 
     /// <summary>
@@ -25,7 +29,7 @@ public class AdministrationController : ControllerBase
     [Route("parser-to-file/news")]
     public async Task<ActionResult> ParseNewsToFile([FromQuery] string keyWord)
     {
-        await exportNewsFromSourceToFile.ExportToFile(keyWord, HttpContext.RequestAborted);
+        await exportNewsFromSourceToFileByKeyWordService.ExportToFileByKeyWord(keyWord, HttpContext.RequestAborted);
         return NoContent();
     }
 
@@ -40,6 +44,7 @@ public class AdministrationController : ControllerBase
         {
             throw new Exception("Файл не найден");
         }
+
         var file = await System.IO.File.ReadAllBytesAsync(fileNameConfiguration.FileWithNewsName);
         return new FileContentResult(file, "text/csv")
         {
@@ -58,7 +63,19 @@ public class AdministrationController : ControllerBase
         {
             return NotFound();
         }
+
         System.IO.File.Delete(fileNameConfiguration.FileWithNewsName);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Добавить файл с ключевми словами для поиска в иссточнике новостсей
+    /// </summary>
+    [HttpPut]
+    [Route("file-with-key-words")]
+    public async Task<ActionResult> UploadFileWithKeyWords(IFormFile file)
+    {
+        await saveFileService.SaveFile(file.OpenReadStream(), fileNameConfiguration.FileWithKeyWordsName);
         return NoContent();
     }
 }

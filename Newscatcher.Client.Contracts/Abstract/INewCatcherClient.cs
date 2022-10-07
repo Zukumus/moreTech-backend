@@ -11,4 +11,9 @@ public interface INewCatcherClient
     /// Получить новости по ключевому слову
     /// </summary>
     Task<IReadOnlyCollection<NewsModel>> GetNewsByKeyWord(string keyWord, CancellationToken token);
+    
+    /// <summary>
+    /// Получить новости по ключевому слову и диапазону дат
+    /// </summary>
+    Task<IReadOnlyCollection<NewsModel>> GetNewsByKeyWordAndDateRange(string keyWord, DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken token);
 }

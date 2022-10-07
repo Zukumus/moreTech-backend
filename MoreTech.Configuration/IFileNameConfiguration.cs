@@ -9,4 +9,9 @@ public interface IFileNameConfiguration
     /// Название файла с новостями
     /// </summary>
     public string FileWithNewsName { get; }
+    
+    /// <summary>
+    /// Название файла с ключевыми словами
+    /// </summary>
+    public string FileWithKeyWordsName { get; }
 }

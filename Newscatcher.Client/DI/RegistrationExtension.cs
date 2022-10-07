@@ -9,7 +9,7 @@ public static class RegistrationExtension
 {
     public static IServiceCollection AddNewsCatcherClients(this IServiceCollection services)
     {
-        services.AddScoped<INewsCatcherClientConfiguration, NewsCatcherClientConfiguration>();
+        services.AddTransient<INewsCatcherClientConfiguration, NewsCatcherClientConfiguration>();
         services.AddHttpClient<INewCatcherClient, NewsCatcherClient>();
         return services;
     }

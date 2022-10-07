@@ -22,4 +22,10 @@ public class NewsModel
     /// </summary>
     [JsonPropertyName("published_date")]
     public string PublishDate { get; set; }
+    
+    /// <summary>
+    /// Дата публикации в источнике
+    /// </summary>
+    [JsonPropertyName("link")]
+    public string SourceUrl { get; set; }
 }

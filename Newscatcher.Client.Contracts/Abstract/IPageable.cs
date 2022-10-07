@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Newscatcher.Client.Contracts.Abstract;
 
 /// <summary>

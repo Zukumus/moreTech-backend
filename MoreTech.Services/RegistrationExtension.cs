@@ -7,7 +7,8 @@ public static class RegistrationExtension
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IExportNewsFromSourceToFile, ExportNewsFromSourceToFile>();
+        services.AddScoped<IExportNewsFromSourceToFileByKeyWordService, ExportNewsFromSourceToFileByKeyWordService>();
+        services.AddScoped<ISaveFileService, SaveFileService>();
         return services;
     }
 }

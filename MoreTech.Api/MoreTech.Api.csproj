@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MoreTech.DomainModels\MoreTech.DomainModels.csproj" />
       <ProjectReference Include="..\MoreTech.MapperProfiles\MoreTech.MapperProfiles.csproj" />
       <ProjectReference Include="..\MoreTech.Services\MoreTech.Services.csproj" />
       <ProjectReference Include="..\Newscatcher.Client\Newscatcher.Client.csproj" />

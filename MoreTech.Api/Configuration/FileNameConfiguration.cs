@@ -12,4 +12,5 @@ public class FileNameConfiguration : IFileNameConfiguration
     }
 
     public string FileWithNewsName => configuration["FILE_WITH_NEWS_NAME"];
+    public string FileWithKeyWordsName => configuration["FILE_WITH_KEY_WORDS_NAME"];
 }

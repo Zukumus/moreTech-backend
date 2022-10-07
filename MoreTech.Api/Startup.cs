@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MoreTech.Api.BackgroundServices;
 using MoreTech.Api.Configuration;
 using MoreTech.Api.Helpers;
 using MoreTech.Configuration;
@@ -35,7 +36,8 @@ public class Startup
         services.AddServices();
         services.AddNewsCatcherClients();
         
-        services.AddScoped<IFileNameConfiguration, FileNameConfiguration>();
+        services.AddTransient<IFileNameConfiguration, FileNameConfiguration>();
+        services.AddHostedService<ExportNewsFromSourceByDelayService>();
         
         services.AddMvc()
             .AddControllersAsServices()
