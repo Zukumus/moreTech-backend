@@ -41,26 +41,4 @@ public class BaseClient
             yield return jsonResponse;
         } while (currentPage < totalPages);
     }
-    
-    protected async IAsyncEnumerable<TResponse> GetByPagination2<TResponse>(string requestUri, int size, [EnumeratorCancellation] CancellationToken cancellationToken = default) where TResponse : class, IPageable
-    {
-        var currentPage = 1;
-        var totalPages = 1;
-        do
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var uriWithPagination = $"{requestUri}&lang=ru&page={currentPage}&page_size={size}";
-            var response = await client.GetAsync(uriWithPagination, cancellationToken);
-            if (response.StatusCode == HttpStatusCode.TooManyRequests)
-            {
-                yield break;
-            }
-            response.EnsureSuccessStatusCode();
-            var stringContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var jsonResponse = (TResponse)JsonSerializer.Deserialize(stringContent, typeof(TResponse), NewsCatcherClientMetadataContext.Default);
-            totalPages = jsonResponse.TotalPages;
-            currentPage++;
-            yield return jsonResponse;
-        } while (currentPage < totalPages);
-    }
 }

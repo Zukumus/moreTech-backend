@@ -55,14 +55,18 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
             {
                 logger.LogInformation("KeyWord queue is empty. All parsing is finished!");
             }
-            var keyWord = queue.Dequeue();
+            var keyWord = queue.Peek();
             logger.LogInformation("Parsing key word {Key} start", keyWord.KeyWord);
             var startDate = DateTime.Parse(keyWord.StartDate);
             var endDate = DateTime.Parse(keyWord.EndDate);
             var news = await getNewsByKeyRepository.GetNewsByKeyWordAndDateRange(keyWord.KeyWord, startDate, endDate, stoppingToken);
-            await WriteToFileWithNews(news, keyWord, stoppingToken);
-            logger.LogInformation("Parsing key word {Key} finished", keyWord.KeyWord);
-            await Task.Delay(TimeSpan.FromMinutes(70), stoppingToken);
+            if (news.Any())
+            {
+                queue.Dequeue();
+                await WriteToFileWithNews(news, keyWord, stoppingToken);
+                logger.LogInformation("Parsing key word {Key} finished", keyWord.KeyWord);
+            }
+            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }
     
