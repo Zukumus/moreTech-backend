@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MoreTech.Data.Repository.Contracts;
 
 namespace MoreTech.Data.Repository.Services;
@@ -10,10 +11,15 @@ public class GetNewsRepository : IGetNewsRepository
     {
         this.context = context;
     }
-    public async Task<IReadOnlyCollection<NewsRepositoryModel>> GetTopNewsByKeyWord(string keyWord, CancellationToken token)
+
+    public async Task<IReadOnlyCollection<NewsRepositoryModel>> GetTopNewsByKeyWord(string userRole, string keyWord,
+        CancellationToken token)
     {
-        var key = keyWord.ToLowerInvariant();
-        var result = context.NewsFromSource.Where(i => i.Title.Contains(key)).Take(3);
+        var key = !string.IsNullOrEmpty(keyWord) ? keyWord.ToLowerInvariant() : string.Empty;
+        var result = context.NewsFromSource.AsNoTracking()
+            .Where(i => (i.Role.Contains(userRole) && string.IsNullOrEmpty(key)) || (!string.IsNullOrEmpty(key) && i.Title.Contains(key))).AsNoTracking().ToList()
+            .OrderByDescending(i => i.PublishDate).DistinctBy(i => i.PublishDate).Take(5).ToList();
+        
         return await Task.FromResult(result.Select(i => new NewsRepositoryModel
         {
             Title = i.Title,

@@ -18,5 +18,6 @@ internal class MigrateDatabaseService : IMigrateDatabaseService
     {
         await context.Database.EnsureDeletedAsync();
         await Migrate();
+        await context.Database.EnsureCreatedAsync();
     }
 }

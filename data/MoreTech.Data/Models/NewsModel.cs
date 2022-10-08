@@ -12,6 +12,11 @@ public class NewsModel
     /// ИД
     /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// Роль
+    /// </summary>
+    public string Role { get; set; }
     
     /// <summary>
     /// Ключевое слово по которому был произведен поиск

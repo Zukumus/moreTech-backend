@@ -5,5 +5,5 @@ namespace MoreTech.Service.Contracts.Abstract;
 /// </summary>
 public interface IExportNewsFromFileToDatabase
 {
-    Task ExportToDb(Stream fileStream, CancellationToken token);
+    Task ExportToDb(string role, Stream fileStream, CancellationToken token);
 }

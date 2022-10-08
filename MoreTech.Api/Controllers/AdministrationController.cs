@@ -102,9 +102,10 @@ public class AdministrationController : ControllerBase
     /// </summary>
     [HttpPut]
     [Route("export-from-file-to-db")]
-    public async Task<ActionResult> Export(IFormFile file)
+    [DisableRequestSizeLimit]
+    public async Task<ActionResult> Export([FromQuery] string role, IFormFile file)
     {
-        await exportNewsFromFileToDatabase.ExportToDb(file.OpenReadStream(), HttpContext.RequestAborted);
+        await exportNewsFromFileToDatabase.ExportToDb(role, file.OpenReadStream(), HttpContext.RequestAborted);
         return NoContent();
     }
 }

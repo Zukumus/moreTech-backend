@@ -6,6 +6,11 @@ namespace MoreTech.Data.Repository.Contracts;
 public class NewsRepositoryModel
 {
     /// <summary>
+    /// Роль
+    /// </summary>
+    public string Role { get; set; }
+    
+    /// <summary>
     /// Ключевое слово по которому был произведен поиск
     /// </summary>
     public string KeyWord { get; set; }

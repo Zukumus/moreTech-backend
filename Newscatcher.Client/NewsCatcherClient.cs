@@ -13,10 +13,7 @@ internal class NewsCatcherClient : BaseClient, INewCatcherClient
     }
 
     public async Task<IReadOnlyCollection<NewsModel>> GetNewsByKeyWord(string keyWord, CancellationToken token) =>
-        await GetByPagination<GetNewsByKeyResponseModel>(
-                $"v1/search_free?q={keyWord}", DefaultPageSize, token)
-            .SelectMany(i => i.News.ToAsyncEnumerable())
-            .ToListAsync(token);
+        (await Get<GetNewsByKeyResponseModel>($"v1/search_free?q={keyWord}&lang=ru&page={1}&page_size={100}", token)).News;
 
     public async Task<IReadOnlyCollection<NewsModel>> GetNewsByKeyWordAndDateRange(string keyWord, DateTimeOffset startDate, DateTimeOffset endDate,
         CancellationToken token) => 

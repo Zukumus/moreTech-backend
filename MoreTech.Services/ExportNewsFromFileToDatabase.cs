@@ -15,7 +15,7 @@ public class ExportNewsFromFileToDatabase : IExportNewsFromFileToDatabase
         this.createNewsRepository = createNewsRepository;
     }
     
-    public async Task ExportToDb(Stream fileStream, CancellationToken token)
+    public async Task ExportToDb(string role, Stream fileStream, CancellationToken token)
     {
         using var reader = new StreamReader(fileStream);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -23,6 +23,7 @@ public class ExportNewsFromFileToDatabase : IExportNewsFromFileToDatabase
         var newsRepoModels = newsFromSource.Select(i => new NewsRepositoryModel
         {
             KeyWord = i.KeyWord,
+            Role = role,
             PublishDate = i.PublishDate,
             Summary = i.Summary,
             SourceUrl = i.SourceUrl,

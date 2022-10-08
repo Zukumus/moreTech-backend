@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using MoreTech.Api.BackgroundServices;
 using MoreTech.Api.Configuration;
@@ -53,6 +54,11 @@ public class Startup
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
             });
+        services.Configure<FormOptions>(x =>
+        {
+            x.ValueLengthLimit = int.MaxValue;
+            x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+        });
         
         services.AddCustomSwagger(configuration, false, null, Assembly.GetExecutingAssembly());
     }

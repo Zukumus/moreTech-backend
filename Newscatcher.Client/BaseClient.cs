@@ -20,6 +20,18 @@ public class BaseClient
         client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "newscatcher.p.rapidapi.com");
     }
     
+    protected async Task<TResponse> Get<TResponse>(string requestUri, CancellationToken cancellationToken) where TResponse : class
+    {
+        var response = await client.GetAsync(requestUri, cancellationToken);
+        if (response.StatusCode is HttpStatusCode.TooManyRequests)
+        {
+            return null;
+        }
+        response.EnsureSuccessStatusCode();
+        var stringContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        return (TResponse)JsonSerializer.Deserialize(stringContent, typeof(TResponse), NewsCatcherClientMetadataContext.Default);
+    }
+    
     protected async IAsyncEnumerable<TResponse> GetByPagination<TResponse>(string requestUri, int size, [EnumeratorCancellation] CancellationToken cancellationToken = default) where TResponse : class, IPageable
     {
         var currentPage = 1;
@@ -30,10 +42,6 @@ public class BaseClient
             var uriWithPagination = $"{requestUri}&lang=ru&page={currentPage}&page_size={size}";
             var response = await client.GetAsync(uriWithPagination, cancellationToken);
             if (response.StatusCode == HttpStatusCode.TooManyRequests)
-            {
-                yield break;
-            }
-            if (!response.IsSuccessStatusCode)
             {
                 yield break;
             }

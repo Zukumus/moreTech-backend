@@ -13,16 +13,28 @@ public class CreateNewsRepository : ICreateNewsRepository
     }
     public async Task CreateNews(IEnumerable<NewsRepositoryModel> NewsModels, CancellationToken token)
     {
-        var news = NewsModels.Select(i => new NewsModel
+        var newsFormSource = NewsModels.Select(i => new NewsModel
         {
             Id = Guid.NewGuid(),
+            Role = i.Role,
             KeyWord = i.KeyWord,
             PublishDate = i.PublishDate,
             SourceUrl = i.SourceUrl,
             Title = i.Title,
-        });
+        }).ToList();
 
-        await context.NewsFromSource.AddRangeAsync(news, token);
-        await context.SaveChangesAsync(token);
+        var list = new List<List<NewsModel>>(); 
+
+        for (int i = 0; i < newsFormSource.Count(); i += 1000) 
+        { 
+            list.Add(newsFormSource.GetRange(i, Math.Min(1000, newsFormSource.Count() - i))); 
+        } 
+
+        
+        foreach (var x in list)
+        {
+            await context.NewsFromSource.AddRangeAsync(x, token);
+            await context.SaveChangesAsync(token);
+        }
     }
 }

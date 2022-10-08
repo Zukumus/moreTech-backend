@@ -8,5 +8,5 @@ public interface IGetNewsRepository
     /// <summary>
     /// Получить новости по ключевому слову
     /// </summary>
-    Task<IReadOnlyCollection<NewsRepositoryModel>> GetTopNewsByKeyWord(string keyWord, CancellationToken token);
+    Task<IReadOnlyCollection<NewsRepositoryModel>> GetTopNewsByKeyWord(string userRole, string keyWord, CancellationToken token);
 }
