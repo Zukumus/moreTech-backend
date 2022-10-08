@@ -19,13 +19,11 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
 
     public ExportNewsFromSourceByDelayService(IFileNameConfiguration fileNameConfiguration,
         IGetNewsByKeyRepository getNewsByKeyRepository,
-        ILogger<ExportNewsFromSourceByDelayService> logger,
-        ICreateNewsRepository createNewsRepository)
+        ILogger<ExportNewsFromSourceByDelayService> logger)
     {
         this.fileNameConfiguration = fileNameConfiguration;
         this.getNewsByKeyRepository = getNewsByKeyRepository;
         this.logger = logger;
-        this.createNewsRepository = createNewsRepository;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

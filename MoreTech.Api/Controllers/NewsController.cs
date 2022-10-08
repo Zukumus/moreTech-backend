@@ -7,7 +7,7 @@ using NewsRepositoryModel = NewsCatcher.Repositories.Contracts.Models.NewsReposi
 namespace MoreTech.Api.Controllers;
 
 [ApiController]
-[Route("administration")]
+[Route("user-news")]
 public class NewsController : ControllerBase
 {
     private readonly IGetNewsRepository getNewsRepository;

@@ -22,6 +22,7 @@ public class GetNewsRepository : IGetNewsRepository
         
         return await Task.FromResult(result.Select(i => new NewsRepositoryModel
         {
+            Role = i.Role,
             Title = i.Title,
             KeyWord = i.KeyWord,
             PublishDate = i.PublishDate,

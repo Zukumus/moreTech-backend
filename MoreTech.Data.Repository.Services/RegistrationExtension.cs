@@ -7,8 +7,8 @@ public static class RegistrationExtension
 {
     public static IServiceCollection AddDataContextRepository(this IServiceCollection services)
     {
-        services.AddScoped<ICreateNewsRepository, CreateNewsRepository>();
-        services.AddScoped<IGetNewsRepository, GetNewsRepository>();
+        services.AddTransient<ICreateNewsRepository, CreateNewsRepository>();
+        services.AddTransient<IGetNewsRepository, GetNewsRepository>();
         return services;
     }
 }
