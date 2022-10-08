@@ -1,11 +1,15 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using MoreTech.Api.BackgroundServices;
 using MoreTech.Api.Configuration;
 using MoreTech.Api.Helpers;
 using MoreTech.Configuration;
+using MoreTech.Data;
+using MoreTech.Data.Repository.Services;
 using MoreTech.MapperProfiles;
+using MoreTech.Migrate.Database.Services;
 using MoreTech.Services;
 using Newscatcher.Client.DI;
 using NewsCatcher.Repositories;
@@ -31,10 +35,14 @@ public class Startup
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddDbContext<DataContext>(options => options.UseSqlServer(configuration["Data:Store:ConnectionString"]));
+        
         services.AddNewsCatcherRepository();
         services.AddMapperProfiles();
         services.AddServices();
         services.AddNewsCatcherClients();
+        services.AddMigrationServices();
+        services.AddDataContextRepository();
         
         services.AddTransient<IFileNameConfiguration, FileNameConfiguration>();
         services.AddHostedService<ExportNewsFromSourceByDelayService>();

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MoreTech.Configuration;
+using MoreTech.Migrate.Database.Services;
 using MoreTech.Service.Contracts.Abstract;
 
 namespace MoreTech.Api.Controllers;
@@ -11,17 +12,34 @@ public class AdministrationController : ControllerBase
     private readonly IExportNewsFromSourceToFileByKeyWordService exportNewsFromSourceToFileByKeyWordService;
     private readonly IFileNameConfiguration fileNameConfiguration;
     private readonly ISaveFileService saveFileService;
+    private readonly IMigrateDatabaseService migrateDatabaseService;
+    private readonly IExportNewsFromFileToDatabase exportNewsFromFileToDatabase;
 
     public AdministrationController(
         IExportNewsFromSourceToFileByKeyWordService exportNewsFromSourceToFileByKeyWordService,
         IFileNameConfiguration fileNameConfiguration,
-        ISaveFileService saveFileService)
+        ISaveFileService saveFileService,
+        IMigrateDatabaseService migrateDatabaseService,
+        IExportNewsFromFileToDatabase exportNewsFromFileToDatabase)
     {
         this.exportNewsFromSourceToFileByKeyWordService = exportNewsFromSourceToFileByKeyWordService;
         this.fileNameConfiguration = fileNameConfiguration;
         this.saveFileService = saveFileService;
+        this.migrateDatabaseService = migrateDatabaseService;
+        this.exportNewsFromFileToDatabase = exportNewsFromFileToDatabase;
     }
 
+    /// <summary>
+    /// Накатывает миграции на БД
+    /// </summary>
+    [HttpPut]
+    [Route("migrations")]
+    public async Task<ActionResult> MigrateDatabase()
+    {
+        await migrateDatabaseService.Recreate();
+        return NoContent();
+    }
+    
     /// <summary>
     /// Экспорт новостей в файл из источника новостей. Если файла был удален, будет создан новый
     /// </summary>
@@ -76,6 +94,17 @@ public class AdministrationController : ControllerBase
     public async Task<ActionResult> UploadFileWithKeyWords(IFormFile file)
     {
         await saveFileService.SaveFile(file.OpenReadStream(), fileNameConfiguration.FileWithKeyWordsName);
+        return NoContent();
+    }
+    
+    /// <summary>
+    /// экспорт из файла с новостями в бд
+    /// </summary>
+    [HttpPut]
+    [Route("export-from-file-to-db")]
+    public async Task<ActionResult> Export(IFormFile file)
+    {
+        await exportNewsFromFileToDatabase.ExportToDb(file.OpenReadStream(), HttpContext.RequestAborted);
         return NoContent();
     }
 }

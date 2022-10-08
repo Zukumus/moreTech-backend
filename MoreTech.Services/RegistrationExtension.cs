@@ -9,6 +9,7 @@ public static class RegistrationExtension
     {
         services.AddScoped<IExportNewsFromSourceToFileByKeyWordService, ExportNewsFromSourceToFileByKeyWordService>();
         services.AddScoped<ISaveFileService, SaveFileService>();
+        services.AddScoped<IExportNewsFromFileToDatabase, ExportNewsFromFileToDatabase>();
         return services;
     }
 }

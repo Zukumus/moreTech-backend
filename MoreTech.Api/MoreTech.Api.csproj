@@ -10,13 +10,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.9" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.4.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\data\MoreTech.Data\MoreTech.Data.csproj" />
+      <ProjectReference Include="..\MoreTech.Data.Repository.Services\MoreTech.Data.Repository.Services.csproj" />
       <ProjectReference Include="..\MoreTech.DomainModels\MoreTech.DomainModels.csproj" />
       <ProjectReference Include="..\MoreTech.MapperProfiles\MoreTech.MapperProfiles.csproj" />
+      <ProjectReference Include="..\MoreTech.Migrate.Database.Services\MoreTech.Migrate.Database.Services.csproj" />
       <ProjectReference Include="..\MoreTech.Services\MoreTech.Services.csproj" />
       <ProjectReference Include="..\Newscatcher.Client\Newscatcher.Client.csproj" />
       <ProjectReference Include="..\NewsCatcher.Repositories\NewsCatcher.Repositories.csproj" />

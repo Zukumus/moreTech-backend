@@ -29,45 +29,54 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var fileFound = false;
-        do
+        try
         {
-            if (!File.Exists(fileNameConfiguration.FileWithKeyWordsName))
+            var fileFound = false;
+            do
             {
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
-                logger.LogInformation("File with key word not found");
-                continue;
-            }
-            fileFound = true;
-            logger.LogInformation("File with key word found");
-        } while (!fileFound);
+                if (!File.Exists(fileNameConfiguration.FileWithKeyWordsName))
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                    logger.LogInformation("File with key word not found");
+                    continue;
+                }
+                fileFound = true;
+                logger.LogInformation("File with key word found");
+            } while (!fileFound);
 
 
-        using var reader = new StreamReader(fileNameConfiguration.FileWithKeyWordsName);
-        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        var keyWords = csv.GetRecords<KeyWordWithDateModel>().ToList();
-        var queue = new Queue<KeyWordWithDateModel>(keyWords);
-        logger.LogInformation("Start parsing");
+            using var reader = new StreamReader(fileNameConfiguration.FileWithKeyWordsName);
+            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            var keyWords = csv.GetRecords<KeyWordWithDateModel>().ToList();
+            var queue = new Queue<KeyWordWithDateModel>(keyWords);
+            logger.LogInformation("Start parsing");
         
-        while (true)
-        {
-            if (!queue.Any())
+            while (true)
             {
-                logger.LogInformation("KeyWord queue is empty. All parsing is finished!");
+                if (!queue.Any())
+                {
+                    logger.LogInformation("KeyWord queue is empty. All parsing is finished!");
+                    break;
+                }
+                var keyWord = queue.Peek();
+                logger.LogInformation("Parsing key word start");
+                var startDate = DateTime.Parse(keyWord.StartDate);
+                var endDate = DateTime.Parse(keyWord.EndDate);
+                var news = await getNewsByKeyRepository.GetNewsByKeyWordAndDateRange(keyWord.KeyWord, startDate, endDate, stoppingToken);
+                if (news.Any())
+                {
+                    queue.Dequeue();
+                    await WriteToFileWithNews(news, keyWord, stoppingToken);
+                    logger.LogInformation("Parsing key word finished");
+                }
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
-            var keyWord = queue.Peek();
-            logger.LogInformation("Parsing key word {Key} start", keyWord.KeyWord);
-            var startDate = DateTime.Parse(keyWord.StartDate);
-            var endDate = DateTime.Parse(keyWord.EndDate);
-            var news = await getNewsByKeyRepository.GetNewsByKeyWordAndDateRange(keyWord.KeyWord, startDate, endDate, stoppingToken);
-            if (news.Any())
-            {
-                queue.Dequeue();
-                await WriteToFileWithNews(news, keyWord, stoppingToken);
-                logger.LogInformation("Parsing key word {Key} finished", keyWord.KeyWord);
-            }
-            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
+        catch (Exception e)
+        {
+            logger.LogInformation("Error: {exception}", e);
+        }
+        
     }
     
     private async Task WriteToFileWithNews(IEnumerable<NewsRepositoryModel> news, KeyWordWithDateModel keyWord, CancellationToken token)

@@ -8,6 +8,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MoreTech.Configuration\MoreTech.Configuration.csproj" />
+      <ProjectReference Include="..\MoreTech.Data.Repository.Contracts\MoreTech.Data.Repository.Contracts.csproj" />
+      <ProjectReference Include="..\MoreTech.DomainModels\MoreTech.DomainModels.csproj" />
       <ProjectReference Include="..\MoreTech.Service.Contracts\MoreTech.Service.Contracts.csproj" />
       <ProjectReference Include="..\NewsCatcher.Repositories.Contracts\NewsCatcher.Repositories.Contracts.csproj" />
     </ItemGroup>
