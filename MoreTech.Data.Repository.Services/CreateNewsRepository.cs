@@ -28,9 +28,8 @@ public class CreateNewsRepository : ICreateNewsRepository
         for (int i = 0; i < newsFormSource.Count(); i += 1000) 
         { 
             list.Add(newsFormSource.GetRange(i, Math.Min(1000, newsFormSource.Count() - i))); 
-        } 
+        }
 
-        
         foreach (var x in list)
         {
             await context.NewsFromSource.AddRangeAsync(x, token);

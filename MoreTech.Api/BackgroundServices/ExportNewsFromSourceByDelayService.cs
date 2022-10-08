@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Globalization;
 using CsvHelper;
-using CsvHelper.Configuration;
 using MoreTech.Configuration;
+using MoreTech.Data.Repository.Contracts;
 using MoreTech.DomainModels;
 using NewsCatcher.Repositories.Contracts.Abstract;
-using NewsCatcher.Repositories.Contracts.Models;
 
 namespace MoreTech.Api.BackgroundServices;
 
@@ -17,14 +15,17 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
     private readonly IFileNameConfiguration fileNameConfiguration;
     private readonly IGetNewsByKeyRepository getNewsByKeyRepository;
     private readonly ILogger<ExportNewsFromSourceByDelayService> logger;
+    private readonly ICreateNewsRepository createNewsRepository;
 
     public ExportNewsFromSourceByDelayService(IFileNameConfiguration fileNameConfiguration,
         IGetNewsByKeyRepository getNewsByKeyRepository,
-        ILogger<ExportNewsFromSourceByDelayService> logger)
+        ILogger<ExportNewsFromSourceByDelayService> logger,
+        ICreateNewsRepository createNewsRepository)
     {
         this.fileNameConfiguration = fileNameConfiguration;
         this.getNewsByKeyRepository = getNewsByKeyRepository;
         this.logger = logger;
+        this.createNewsRepository = createNewsRepository;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -66,7 +67,16 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
                 if (news.Any())
                 {
                     queue.Dequeue();
-                    await WriteToFileWithNews(news, keyWord, stoppingToken);
+                    var newsToCreate = news.Select(i => new MoreTech.Data.Repository.Contracts.NewsRepositoryModel
+                    {
+                        Role = keyWord.UserRole,
+                        KeyWord = keyWord.KeyWord,
+                        PublishDate = i.PublishDate,
+                        SourceUrl = i.SourceUrl,
+                        Summary = i.Summary,
+                        Title = i.Title,
+                    });
+                    await createNewsRepository.CreateNews(newsToCreate, stoppingToken);
                     logger.LogInformation("Parsing key word finished");
                 }
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
@@ -76,23 +86,5 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
         {
             logger.LogInformation("Error: {exception}", e);
         }
-        
-    }
-    
-    private async Task WriteToFileWithNews(IEnumerable<NewsRepositoryModel> news, KeyWordWithDateModel keyWord, CancellationToken token)
-    {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            HasHeaderRecord = true,
-        };
-        await using var stream = File.Open(fileNameConfiguration.FileWithNewsName, FileMode.Append);
-        await using var writer = new StreamWriter(stream);
-        await using var csv = new CsvWriter(writer, config);
-        var newsFullModel = news.Select(i => new NewsFromSourceFullModel
-        {
-            KeyWord = keyWord.KeyWord, Summary = i.Summary, Title = i.Title, PublishDate = i.PublishDate,
-            SourceUrl = i.SourceUrl,
-        });
-        await csv.WriteRecordsAsync((IEnumerable)newsFullModel, token);
     }
 }
