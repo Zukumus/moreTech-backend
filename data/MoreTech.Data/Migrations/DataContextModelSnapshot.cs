@@ -35,6 +35,10 @@ namespace MoreTech.Data.Migrations
                     b.Property<DateTime>("PublishDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SourceUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

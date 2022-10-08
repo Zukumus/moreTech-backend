@@ -12,7 +12,7 @@ using MoreTech.Data;
 namespace MoreTech.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221008104214_InitialCreate")]
+    [Migration("20221008152431_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,10 @@ namespace MoreTech.Data.Migrations
 
                     b.Property<DateTime>("PublishDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SourceUrl")
                         .IsRequired()
