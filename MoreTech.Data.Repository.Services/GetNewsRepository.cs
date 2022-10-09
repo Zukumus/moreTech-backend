@@ -15,10 +15,14 @@ public class GetNewsRepository : IGetNewsRepository
     public async Task<IReadOnlyCollection<NewsRepositoryModel>> GetTopNewsByKeyWord(string userRole, string keyWord,
         CancellationToken token)
     {
-        var key = !string.IsNullOrEmpty(keyWord) ? keyWord.ToLowerInvariant() : string.Empty;
-        var result = context.NewsFromSource.AsNoTracking()
-            .Where(i => (i.Role.Contains(userRole) && string.IsNullOrEmpty(key)) || (!string.IsNullOrEmpty(key) && i.Title.Contains(key))).AsNoTracking().ToList()
-            .OrderByDescending(i => i.PublishDate).DistinctBy(i => i.PublishDate).Take(5).ToList();
+        var roleLowerCase = userRole.ToLowerInvariant();
+        var query = context.NewsFromSource.AsNoTracking().Where(i => (i.Role.Contains(roleLowerCase)));
+        if (!string.IsNullOrEmpty(keyWord))
+        {
+            var keyLower = keyWord.ToLowerInvariant();
+            query = query.Where(i => i.Title.Contains(keyLower)).AsNoTracking();
+        }
+        var result = query.ToList().OrderByDescending(i => i.PublishDate).DistinctBy(i => i.PublishDate).Take(5).ToList();
         
         return await Task.FromResult(result.Select(i => new NewsRepositoryModel
         {

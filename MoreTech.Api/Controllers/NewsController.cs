@@ -14,14 +14,17 @@ public class NewsController : ControllerBase
     private readonly IExportNewsFromSourceToDataBase exportNewsFromSourceToDataBase;
     private readonly ISaveFileService saveFileService;
     private readonly IFileNameConfiguration fileNameConfiguration;
+    private readonly IGetUserRolesRepository getUserRolesRepository;
 
     public NewsController(IGetNewsRepository getNewsRepository,
-        IExportNewsFromSourceToDataBase exportNewsFromSourceToDataBase, ISaveFileService saveFileService, IFileNameConfiguration fileNameConfiguration)
+        IExportNewsFromSourceToDataBase exportNewsFromSourceToDataBase, ISaveFileService saveFileService, IFileNameConfiguration fileNameConfiguration,
+        IGetUserRolesRepository getUserRolesRepository)
     {
         this.getNewsRepository = getNewsRepository;
         this.exportNewsFromSourceToDataBase = exportNewsFromSourceToDataBase;
         this.saveFileService = saveFileService;
         this.fileNameConfiguration = fileNameConfiguration;
+        this.getUserRolesRepository = getUserRolesRepository;
     }
 
     /// <summary>
@@ -56,5 +59,16 @@ public class NewsController : ControllerBase
     {
         var news = await getNewsRepository.GetTopNewsByKeyWord(role, keyWord, CancellationToken.None);
         return Ok(news);
+    }
+    
+    /// <summary>
+    /// Получить список ролей и тем
+    /// </summary>
+    [HttpGet]
+    [Route("roles-themes")]
+    public async Task<ActionResult<Dictionary<string, List<string>>>> GetRolesAndThemes()
+    {
+        var rolesAndThemes = await getUserRolesRepository.GetRolesAndThemes(HttpContext.RequestAborted);
+        return Ok(rolesAndThemes);
     }
 }

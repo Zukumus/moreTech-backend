@@ -12,15 +12,17 @@ namespace MoreTech.Api.BackgroundServices;
 /// </summary>
 public class ExportNewsFromSourceByDelayService : BackgroundService
 {
+    private readonly IServiceScopeFactory serviceScopeFactory;
     private readonly IFileNameConfiguration fileNameConfiguration;
     private readonly IGetNewsByKeyRepository getNewsByKeyRepository;
     private readonly ILogger<ExportNewsFromSourceByDelayService> logger;
-    private readonly ICreateNewsRepository createNewsRepository;
 
-    public ExportNewsFromSourceByDelayService(IFileNameConfiguration fileNameConfiguration,
+    public ExportNewsFromSourceByDelayService(IServiceScopeFactory serviceScopeFactory,
+        IFileNameConfiguration fileNameConfiguration,
         IGetNewsByKeyRepository getNewsByKeyRepository,
         ILogger<ExportNewsFromSourceByDelayService> logger)
     {
+        this.serviceScopeFactory = serviceScopeFactory;
         this.fileNameConfiguration = fileNameConfiguration;
         this.getNewsByKeyRepository = getNewsByKeyRepository;
         this.logger = logger;
@@ -62,6 +64,8 @@ public class ExportNewsFromSourceByDelayService : BackgroundService
                 var startDate = DateTime.Parse(keyWord.StartDate);
                 var endDate = DateTime.Parse(keyWord.EndDate);
                 var news = await getNewsByKeyRepository.GetNewsByKeyWordAndDateRange(keyWord.KeyWord, startDate, endDate, stoppingToken);
+                using var scope = serviceScopeFactory.CreateScope();
+                var createNewsRepository = scope.ServiceProvider.GetRequiredService<ICreateNewsRepository>();
                 if (news.Any())
                 {
                     queue.Dequeue();

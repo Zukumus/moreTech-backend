@@ -9,6 +9,7 @@ public static class RegistrationExtension
     {
         services.AddTransient<ICreateNewsRepository, CreateNewsRepository>();
         services.AddTransient<IGetNewsRepository, GetNewsRepository>();
+        services.AddTransient<IGetUserRolesRepository, GetUserRolesRepository>();
         return services;
     }
 }
