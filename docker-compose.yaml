@@ -1,7 +1,11 @@
-version: "3"
+version: "3.9"
 
 services:
   backend:
+    depends_on:
+      - mssql
+    networks:
+      - my_network
     build:        
       context: .
       dockerfile: ./MoreTech.Api/Dockerfile
@@ -14,6 +18,9 @@ services:
 
   mssql:
     container_name: mssql
+    hostname: mssql-db
+    networks:
+      - my_network
     image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
     environment: 
       - ACCEPT_EULA=Y
@@ -21,3 +28,7 @@ services:
     ports:
       - 1433:1433
     restart: always
+    
+networks:
+  my_network:
+    driver: bridge
