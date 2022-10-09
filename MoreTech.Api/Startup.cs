@@ -36,7 +36,7 @@ public class Startup
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<DataContext>(options => options.UseSqlServer(configuration["Data:Store:ConnectionString"]));
+        services.AddDbContext<DataContext>(options => options.UseSqlServer(configuration["CONNECTION_STRING"]));
         
         services.AddNewsCatcherRepository();
         services.AddMapperProfiles();
