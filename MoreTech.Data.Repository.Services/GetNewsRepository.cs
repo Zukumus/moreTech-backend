@@ -20,7 +20,7 @@ public class GetNewsRepository : IGetNewsRepository
         if (!string.IsNullOrEmpty(keyWord))
         {
             var keyLower = keyWord.ToLowerInvariant();
-            query = query.Where(i => i.Title.Contains(keyLower)).AsNoTracking();
+            query = query.Where(i => i.Title.Contains(keyLower) || i.KeyWord.Contains(keyLower)).AsNoTracking();
         }
         var result = query.ToList().OrderByDescending(i => i.PublishDate).DistinctBy(i => i.PublishDate).Take(5).ToList();
         

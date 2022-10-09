@@ -45,6 +45,10 @@ public class BaseClient
             {
                 yield break;
             }
+            if (!response.IsSuccessStatusCode)
+            {
+                yield break;
+            }
             response.EnsureSuccessStatusCode();
             var stringContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var jsonResponse = (TResponse)JsonSerializer.Deserialize(stringContent, typeof(TResponse), NewsCatcherClientMetadataContext.Default);
